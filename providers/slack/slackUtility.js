@@ -100,13 +100,13 @@ async function searchQuery(keyword) {
 
     const data = new URLSearchParams({
       query: keyword,
-      count: 1, // Number of messages to retrieve
+      count: 100, // Number of messages to retrieve //! DISCUSS WITH TEAM
       sort: "timestamp", // Sorting by timestamp
       sort_dir: "desc", // Sorting direction
     }).toString();
 
     const response = await axios.post(
-      "https://slack.com/api/search.all",
+      "https://slack.com/api/search.messages",
       data,
       { headers }
     );
@@ -138,7 +138,7 @@ async function searchQuery(keyword) {
     console.error("An error occurred:", error);
   }
 }
-
+//GET the technical keywords from the question
 function findTechnicalKeywords(question) {
   const keywords = question.toLowerCase().split(" ");
   const foundKeywords = [];
@@ -151,14 +151,17 @@ function findTechnicalKeywords(question) {
   }
   return foundKeywords;
 }
-
+//call the function to get the technical keywords
 const foundKeywords = findTechnicalKeywords(questionToSearch);
-
+//! DISCUSS WITH TEAM
 if (foundKeywords.length > 0) {
   console.log("Found technical keywords:", foundKeywords);
-  for (const keyword of foundKeywords) {
-    searchQuery(keyword);
-  }
+  const stringKeywords = foundKeywords.join(" ");
+  console.log("String keywords:", stringKeywords);
+  searchQuery(stringKeywords); //! DISCUSS WITH TEAM
+  // for (const keyword of foundKeywords) {
+  //   searchQuery(keyword);
+  // }
 } else {
   console.log("No technical keywords found in the question.");
 }

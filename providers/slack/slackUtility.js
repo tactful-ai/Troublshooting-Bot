@@ -156,12 +156,9 @@ const foundKeywords = findTechnicalKeywords(questionToSearch);
 //! DISCUSS WITH TEAMm
 if (foundKeywords.length > 0) {
   console.log("Found technical keywords:", foundKeywords);
-  const stringKeywords = foundKeywords.join(" ");
-  console.log("String keywords:", stringKeywords);
-  searchQuery(stringKeywords); //! DISCUSS WITH TEAM
-  // for (const keyword of foundKeywords) {
-  //   searchQuery(keyword);
-  // }
+  for (const keyword of foundKeywords) {
+    searchQuery(keyword);
+  }
 } else {
   console.log("No technical keywords found in the question.");
 }

@@ -153,7 +153,6 @@ function findTechnicalKeywords(question) {
 }
 //call the function to get the technical keywords
 const foundKeywords = findTechnicalKeywords(questionToSearch);
-//! DISCUSS WITH TEAMm
 if (foundKeywords.length > 0) {
   console.log("Found technical keywords:", foundKeywords);
   for (const keyword of foundKeywords) {

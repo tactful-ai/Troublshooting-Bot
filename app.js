@@ -1,17 +1,17 @@
 const express = require("express");
 const app = express();
 const slack = require("./providers/slack/slackUtility");
+const googleDoc = require("./providers/googleDocs/googleUtilty");
+
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 
 app.get("/", (req, res) => {
-  if (process.env.NODE_ENV === "development") {
-    res.send("Hello, Express!");
-  }
+  res.send("Welcome To Troubleshooting Bot");
 });
 
-if (process.env.NODE_ENV === "development") {
-  app.use("/slack", slack);
-}
+app.use("/slack", slack);
+
+app.use("/googleDoc", googleDoc);
 
 module.exports = app;

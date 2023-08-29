@@ -2,22 +2,19 @@ const express = require("express");
 const axios = require("axios");
 const app = express();
 const { WebClient } = require("@slack/web-api");
-const technicalArrayKeyword = require("./technicalKeywords");
-require("dotenv").config();
-const token = process.env.SLACK_TOKEN;
-const channelId = process.env.CHANNEL_ID;
+const nonTechnicalArrayKeyword = require("../nonTechnicalKeywords");
+const token = "YOUR_SLACK_TOKEN";
+const channelId = "YOUR_CHANNEL_ID";
+// Create a new instance of the WebClient class with the token read from your environment variable
 const web = new WebClient(token);
 
 app.use(express.urlencoded({ extended: false }));
 
-const questionToSearch =
-  "What is the difference between TCP and UDP and Javascript protocols? ";
-
-app.post("/form-submit", (req, res) => {
+app.post("/q-a", (req, res) => {
   //POST IN THE CHANNEL
   axios
     .post(
-      "https://hooks.slack.com/services/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",
+      "https://hooks.slack.com/services/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",
       {
         blocks: [
           {
@@ -37,8 +34,8 @@ app.post("/form-submit", (req, res) => {
       res.send("Form submission failed!");
     });
 });
-//Function to fetch and print ALL messages
-async function fetchAndPrintMessages() {
+
+app.get("/allMessages", async (req, res) => {
   try {
     // Call the conversations.history API to fetch messages
     const result = await web.conversations.history({
@@ -47,49 +44,26 @@ async function fetchAndPrintMessages() {
 
     // Check if the API call was successful
     if (result.ok) {
-      console.log(
-        "--------------------ALL MESSAGES IN CHANNEL----------------------"
-      );
-      // Print each message text to the console
-      result.messages.forEach((message) => {
-        console.log(message.text);
+      const messages = result.messages.map((message) => {
+        return {
+          text: message.text,
+          timestamp: message.ts,
+          user: message.user,
+          // Add other properties you want to save
+        };
       });
+      console.log(messages);
+
+      res.status(200).json({ status: 200, data: { messages } });
     } else {
       console.error("Failed to fetch messages:", result.error);
+      res.status(500).json({ status: 500, error: "Failed to fetch messages" });
     }
   } catch (error) {
     console.error("An error occurred:", error);
+    res.status(500).json({ status: 500, error: "Internal Server Error" });
   }
-}
-fetchAndPrintMessages();
-
-async function fetchLastQuestion() {
-  try {
-    // Call the conversations.history API to fetch messages
-    const result = await web.conversations.history({
-      channel: channelId,
-      //limit: 1, // Retrieve the last message only
-    });
-
-    // Check if the API call was successful
-    if (result.ok && result.messages.length > 0) {
-      // Get the text of the last message
-      const lastMessageText = result.messages[0].text;
-      console.log(
-        "-------------------LAST QUESTION ASKED IN THE CAHNNEL-----------------------"
-      );
-      console.log("Last question:", lastMessageText);
-
-      // Call the searchQuery function with the last message as parameter
-      //searchQuery(lastMessageText);
-    } else {
-      console.error("Failed to fetch last message:", result.error);
-    }
-  } catch (error) {
-    console.error("An error occurred:", error);
-  }
-}
-fetchLastQuestion();
+});
 
 async function searchQuery(keyword) {
   try {
@@ -100,9 +74,9 @@ async function searchQuery(keyword) {
 
     const data = new URLSearchParams({
       query: keyword,
-      count: 100, // Number of messages to retrieve //! DISCUSS WITH TEAM
-      sort: "timestamp", // Sorting by timestamp
-      sort_dir: "desc", // Sorting direction
+      count: 10,
+      sort: "timestamp",
+      sort_dir: "desc",
     }).toString();
 
     const response = await axios.post(
@@ -125,40 +99,86 @@ async function searchQuery(keyword) {
         result.messages.matches.forEach((match) => {
           console.log(match.text);
         });
+
+        const foundQuestionData = {
+          found: true,
+          question: `Channel has a question related to the keyword: ${keyword}`,
+          foundQuestion: result.messages.matches.map((match) => match.text),
+        };
+
+        return foundQuestionData;
       } else {
         console.log("------------------NO QUESTION------------------------");
         console.log(
           `No question found in the channel for the keyword: ${keyword}`
         );
+        return { found: false };
       }
     } else {
       console.error("Failed to search messages:", result.error);
+      return { found: false };
     }
   } catch (error) {
     console.error("An error occurred:", error);
+    return { found: false };
   }
 }
-//GET the technical keywords from the question
+
+app.post("/question", async (req, res) => {
+  const question = req.body.question;
+  const foundKeywords = findTechnicalKeywords(question);
+
+  const keywordResults = [];
+
+  for (const keyword of foundKeywords) {
+    const questionData = await searchQuery(keyword); // Await the asynchronous searchQuery
+    keywordResults.push({
+      keyword: keyword,
+      found: questionData.found,
+      foundQuestion: questionData.foundQuestion,
+    });
+  }
+
+  const hasFoundAnyKeyword = keywordResults.some((result) => result.found);
+
+  if (hasFoundAnyKeyword) {
+    res.status(200).json({
+      status: 200,
+      message: "Question Received",
+      data: {
+        question,
+        keywordResults,
+      },
+    });
+  } else {
+    console.log("No technical keywords found in the question.");
+    res.status(200).json({
+      status: 200,
+      message: "Question Received",
+      data: {
+        question,
+        keywordResults,
+      },
+    });
+  }
+});
+
+//Find technical keywords in the question
 function findTechnicalKeywords(question) {
   const keywords = question.toLowerCase().split(" ");
   const foundKeywords = [];
 
   for (const keyword of keywords) {
-    if (technicalArrayKeyword.includes(keyword)) {
-      //use includes to check if the keyword is in the array
+    if (!nonTechnicalArrayKeyword.includes(keyword)) {
       foundKeywords.push(keyword);
     }
   }
+
   return foundKeywords;
 }
-//call the function to get the technical keywords
-const foundKeywords = findTechnicalKeywords(questionToSearch);
-if (foundKeywords.length > 0) {
-  console.log("Found technical keywords:", foundKeywords);
-  for (const keyword of foundKeywords) {
-    searchQuery(keyword);
-  }
-} else {
-  console.log("No technical keywords found in the question.");
-}
-exports = module.exports = app;
+
+app.get("/keywords", (req, res) => {
+  res.status(200).json({ status: 200, data: { technicalArrayKeyword } });
+});
+
+module.exports = app;

@@ -1,9 +1,13 @@
 module.exports = [
-  " ",
   "what",
   "the",
   "is",
   "?",
+  "how",
+  "when",
+  "where",
+  "why",
+  "!",
   "a",
   "difference",
   "an",
@@ -129,8 +133,6 @@ module.exports = [
   "inside",
   "beneath",
   "upon",
-
-  // Conjunctions
   "unless",
   "whereas",
   "while",
@@ -139,9 +141,7 @@ module.exports = [
   "because",
   "although",
   "provided",
-  "since",
 
-  // Adverbs
   "quickly",
   "slowly",
   "carefully",
@@ -151,8 +151,6 @@ module.exports = [
   "often",
   "rarely",
   "seldom",
-
-  // Pronouns
   "myself",
   "yourself",
   "himself",
@@ -164,8 +162,6 @@ module.exports = [
   "someone",
   "anyone",
   "everyone",
-
-  // Time-related
   "year",
   "month",
   "week",

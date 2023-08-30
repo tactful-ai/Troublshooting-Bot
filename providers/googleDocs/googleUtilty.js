@@ -4,8 +4,10 @@ const nonTechnicalArrayKeyword = require("./../nonTechnicalKeywords");
 const app = express();
 
 app.use(express.urlencoded({ extended: true }));
-
-const documentId = "YOUR_DOCUMENT_ID"; // Google Doc ID
+app.use(express.json());
+const dotenv = require("dotenv");
+dotenv.config();
+const documentId = process.env.GOOGLE_DOCS_ID;
 app.use(express.json());
 
 app.post("/q-a", async (req, res) => {

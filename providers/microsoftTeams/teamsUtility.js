@@ -30,7 +30,6 @@ const fetchAllMessages = async () => {
         );
         allMessages = allMessages.concat(messages);
 
-        // Check if there are more pages
         pageUrl = responseData["@odata.nextLink"];
       } else {
         console.error("Error fetching messages:", response.statusText);
@@ -49,7 +48,6 @@ app.get("/fetch-chat", async (req, res) => {
   try {
     const messages = await fetchAllMessages();
 
-    // Extract sender's name and message content
     const simplifiedMessages = messages.map((message) => ({
       sender:
         message.from && message.from.user
@@ -121,7 +119,7 @@ app.post("/question", async (req, res) => {
     },
   });
 });
-//Find technical keywords in the question
+
 function findTechnicalKeywords(question) {
   const keywords = question.toLowerCase().split(" ");
   const foundKeywords = [];

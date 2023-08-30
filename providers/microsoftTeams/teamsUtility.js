@@ -3,51 +3,13 @@ const express = require("express");
 const app = express();
 const dotenv = require("dotenv");
 dotenv.config();
-
+app.use(express.urlencoded({ extended: false }));
+app.use(express.json());
 const accessToken = process.env.TEAMS_TOKEN;
+const nonTechnicalArrayKeyword = require("./../nonTechnicalKeywords");
 
-const searchRequestBody = {
-  requests: [
-    {
-      entityTypes: ["chatMessage"],
-      query: {
-        queryString: "helllo",
-      },
-    },
-  ],
-};
-
-const searchChatMessages = async () => {
-  try {
-    const response = await axios.post(
-      "https://graph.microsoft.com/beta/search/microsoft.graph.query",
-      searchRequestBody,
-      {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-          "Content-Type": "application/json",
-        },
-      }
-    );
-
-    if (response.status === 200) {
-      const responseData = response.data;
-      const chatMessages = responseData.value;
-      return chatMessages;
-    } else {
-      console.error("Error searching chat messages:", response.statusText);
-      return [];
-    }
-  } catch (error) {
-    console.error("Error searching chat messages:", error);
-    return [];
-  }
-};
-
-// const searchQuery = "Hello";
 const fetchAllMessages = async () => {
-  const chatEndpoint =
-    "https://graph.microsoft.com/beta/chats/19:uni01_tcy3xfktmzpebrha5hqua34tpfnuuey3je6q26zkbbtzi5k4dasq@thread.v2/messages";
+  const chatEndpoint = `https://graph.microsoft.com/beta/chats/${CHAT_ID}/messages`;
 
   let allMessages = [];
 
@@ -64,7 +26,7 @@ const fetchAllMessages = async () => {
       if (response.status === 200) {
         const responseData = response.data;
         const messages = responseData.value.filter(
-          (message) => message.body.content.trim() !== "" // Filter out empty messages
+          (message) => message.body.content.trim() !== ""
         );
         allMessages = allMessages.concat(messages);
 
@@ -83,24 +45,11 @@ const fetchAllMessages = async () => {
   return allMessages;
 };
 
-// Endpoint to search chat messages
-app.get("/search-messages", async (req, res) => {
-  try {
-    const chatMessages = await searchChatMessages();
-    res.json(chatMessages);
-  } catch (error) {
-    res
-      .status(500)
-      .json({ error: "An error occurred while searching chat messages." });
-  }
-});
-
-// Endpoint to fetch all messages
 app.get("/fetch-chat", async (req, res) => {
   try {
     const messages = await fetchAllMessages();
 
-    // Extract the sender's name and message content
+    // Extract sender's name and message content
     const simplifiedMessages = messages.map((message) => ({
       sender:
         message.from && message.from.user
@@ -116,5 +65,74 @@ app.get("/fetch-chat", async (req, res) => {
       .json({ error: "An error occurred while fetching messages." });
   }
 });
+
+async function searchQuery(keyword) {
+  try {
+    const messages = await fetchAllMessages(keyword);
+
+    const matchedMessages = messages
+      .filter((message) => message.body.content.includes(keyword))
+      .map((message) => ({
+        sender:
+          message.from && message.from.user
+            ? message.from.user.displayName
+            : "System",
+        message: message.body.content,
+      }));
+
+    return {
+      found: matchedMessages.length > 0,
+      foundMessages: matchedMessages,
+    };
+  } catch (error) {
+    console.error("Error searching messages:", error);
+    throw error;
+  }
+}
+
+app.post("/question", async (req, res) => {
+  const question = req.body.question;
+  const foundKeywords = findTechnicalKeywords(question);
+
+  const keywordResults = [];
+
+  for (const keyword of foundKeywords) {
+    try {
+      const keywordData = await searchQuery(keyword);
+      keywordResults.push({
+        keyword: keyword,
+        found: keywordData.found,
+        foundMessages: keywordData.foundMessages,
+      });
+    } catch (error) {
+      res.status(500).json({ error: "An error occurred while processing." });
+      return;
+    }
+  }
+
+  const hasFoundAnyKeyword = keywordResults.some((result) => result.found);
+
+  res.status(200).json({
+    status: 200,
+    message: "Question Received",
+    data: {
+      question,
+      keywordResults,
+    },
+  });
+});
+//Find technical keywords in the question
+function findTechnicalKeywords(question) {
+  const keywords = question.toLowerCase().split(" ");
+  const foundKeywords = [];
+
+  for (const keyword of keywords) {
+    if (!nonTechnicalArrayKeyword.includes(keyword)) {
+      foundKeywords.push(keyword);
+    }
+  }
+
+  return foundKeywords;
+}
 
 module.exports = app;

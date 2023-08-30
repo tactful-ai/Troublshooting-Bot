@@ -3,8 +3,10 @@ const axios = require("axios");
 const app = express();
 const { WebClient } = require("@slack/web-api");
 const nonTechnicalArrayKeyword = require("../nonTechnicalKeywords");
-const token = "YOUR_SLACK_TOKEN";
-const channelId = "YOUR_CHANNEL_ID";
+const dotenv = require("dotenv");
+dotenv.config();
+const token = process.env.SLACK_TOKEN;
+const channelId = process.env.SLACK_CHANNEL_ID;
 // Create a new instance of the WebClient class with the token read from your environment variable
 const web = new WebClient(token);
 
@@ -13,20 +15,17 @@ app.use(express.urlencoded({ extended: false }));
 app.post("/q-a", (req, res) => {
   //POST IN THE CHANNEL
   axios
-    .post(
-      "https://hooks.slack.com/services/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",
-      {
-        blocks: [
-          {
-            type: "section",
-            text: {
-              type: "mrkdwn",
-              text: `Question: *${req.body.question}*\n\n Answer: *${req.body.answer}*`,
-            },
+    .post(process.env.SLACK_WEBHOOK_URL, {
+      blocks: [
+        {
+          type: "section",
+          text: {
+            type: "mrkdwn",
+            text: `Question: *${req.body.question}*\n\n Answer: *${req.body.answer}*`,
           },
-        ],
-      }
-    )
+        },
+      ],
+    })
     .then(() => {
       res.send("Form submitted!");
     })

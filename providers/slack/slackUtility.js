@@ -7,13 +7,11 @@ const dotenv = require("dotenv");
 dotenv.config();
 const token = process.env.SLACK_TOKEN;
 const channelId = process.env.SLACK_CHANNEL_ID;
-// Create a new instance of the WebClient class with the token read from your environment variable
 const web = new WebClient(token);
 
 app.use(express.urlencoded({ extended: false }));
 
 app.post("/q-a", (req, res) => {
-  //POST IN THE CHANNEL
   axios
     .post(process.env.SLACK_WEBHOOK_URL, {
       blocks: [
@@ -36,19 +34,16 @@ app.post("/q-a", (req, res) => {
 
 app.get("/allMessages", async (req, res) => {
   try {
-    // Call the conversations.history API to fetch messages
     const result = await web.conversations.history({
       channel: channelId,
     });
 
-    // Check if the API call was successful
     if (result.ok) {
       const messages = result.messages.map((message) => {
         return {
           text: message.text,
           timestamp: message.ts,
           user: message.user,
-          // Add other properties you want to save
         };
       });
       console.log(messages);
@@ -130,7 +125,7 @@ app.post("/question", async (req, res) => {
   const keywordResults = [];
 
   for (const keyword of foundKeywords) {
-    const questionData = await searchQuery(keyword); // Await the asynchronous searchQuery
+    const questionData = await searchQuery(keyword);
     keywordResults.push({
       keyword: keyword,
       found: questionData.found,
@@ -162,7 +157,6 @@ app.post("/question", async (req, res) => {
   }
 });
 
-//Find technical keywords in the question
 function findTechnicalKeywords(question) {
   const keywords = question.toLowerCase().split(" ");
   const foundKeywords = [];

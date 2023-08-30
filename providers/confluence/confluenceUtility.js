@@ -17,7 +17,6 @@ const auth = {
   password: password,
 };
 
-// Function to retrieve page content by page ID
 async function getPageContent(pageId) {
   try {
     const response = await axios.get(
@@ -62,10 +61,10 @@ async function searchQuery(keyword) {
       .includes(keyword);
     const keywordFoundInBody = pageContent.body.toLowerCase().includes(keyword);
 
-    let articleContent = ""; // Initialize with empty string
-    let articleFound = false; // Initialize with false
+    let articleContent = "";
+    let articleFound = false;
 
-    const boldTextRegex = /<strong>|<b>(.*?)<\/b>/gi; // Define bold text regex here
+    const boldTextRegex = /<strong>|<b>(.*?)<\/b>/gi;
 
     if (keywordFoundInBody) {
       const bodyLines = pageContent.body.split("\n");
@@ -86,17 +85,15 @@ async function searchQuery(keyword) {
       }
 
       if (tempArticleContent) {
-        // Split the content into paragraphs
         const paragraphs = tempArticleContent.split("<p />");
 
-        // Find the paragraph that contains the keyword
         const paragraphWithKeyword = paragraphs.find((paragraph) =>
           paragraph.toLowerCase().includes(keyword)
         );
 
         if (paragraphWithKeyword) {
           articleContent = paragraphWithKeyword;
-          articleFound = true; // Set to true if article content is found
+          articleFound = true;
         }
       }
     }
@@ -147,7 +144,6 @@ app.post("/question", async (req, res) => {
         articleContent,
       });
     }
-    //console.log("results", results);
     return res.json({ results });
   } else {
     return res.json({

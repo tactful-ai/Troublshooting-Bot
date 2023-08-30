@@ -18,33 +18,27 @@ app.post("/q-a", async (req, res) => {
     scopes: "https://www.googleapis.com/auth/documents",
   });
 
-  // Create client instance for auth
   const client = await auth.getClient();
 
-  // Instance of Google Docs API
   const googleDocs = google.docs({ version: "v1", auth: client });
 
-  // Get the document's content
   const document = await googleDocs.documents.get({
     documentId,
   });
 
-  // Get the existing content from the document
   const existingContent = document.data.body.content;
 
-  // Construct the new content to be added
   const newContent = [
     {
       insertText: {
         location: {
-          index: existingContent.length, // Append at the end
+          index: existingContent.length,
         },
-        text: `Question: ${question}, Answer: ${answer}\n`, // Use request and name fields
+        text: `Question: ${question}, Answer: ${answer}\n`,
       },
     },
   ];
 
-  // Add content to the document
   await googleDocs.documents.batchUpdate({
     documentId,
     resource: {
@@ -61,20 +55,16 @@ app.get("/document", async (req, res) => {
     scopes: "https://www.googleapis.com/auth/documents.readonly",
   });
 
-  // Create client instance for auth
   const client = await auth.getClient();
 
-  // Instance of Google Docs API
   const googleDocs = google.docs({ version: "v1", auth: client });
 
-  // Get the document's content
   const document = await googleDocs.documents.get({
     documentId,
   });
 
   const content = document.data.body.content;
 
-  // Extract text from the content
   const extractedText = content
     .map((item) =>
       item.paragraph
@@ -108,20 +98,17 @@ async function searchQuery(keyword) {
       documentId,
     });
 
-    // Extract the content of the document
     const content = document.data.body.content;
 
-    // Flags to track article and keyword found status, and capturing content
     let articleFound = false;
     let articleContent = "";
 
     let keywordFound = false;
     let capturingContent = false;
 
-    // Iterate through the content of the document
     for (const item of content) {
       if (articleFound) {
-        break; // Exit the loop if the article is found
+        break;
       }
 
       if (item.paragraph) {
@@ -130,27 +117,25 @@ async function searchQuery(keyword) {
             const contentText = element.textRun.content;
 
             if (capturingContent && element.textRun.textStyle.bold) {
-              articleFound = true; // Mark article as found if bold text encountered
+              articleFound = true;
               break;
             }
 
             if (contentText.toLowerCase().includes(keyword)) {
-              keywordFound = true; // Mark keyword as found
-              capturingContent = true; // Start capturing content
+              keywordFound = true;
+              capturingContent = true;
             }
 
             if (capturingContent) {
-              articleContent += contentText; // Accumulate content text
+              articleContent += contentText;
             }
           }
         }
       }
     }
 
-    // Return information about whether article and keyword were found, along with the article content
     return { articleFound, articleContent };
   } catch (error) {
-    // Handle errors: log the error and return default values
     console.error("Error searching for keywords:", error);
     return { articleFound: false, articleContent: "" };
   }

@@ -4,7 +4,7 @@ const slack = require("./providers/slack/slackUtility");
 const googleDoc = require("./providers/googleDocs/googleUtilty");
 const confluence = require("./providers/confluence/confluenceUtility");
 const teams = require("./providers/microsoftTeams/teamsUtility");
-const nonTechnicalArrayKeyword = require("./providers/nonTechnicalKeywords");
+const discord = require("./providers/discord/discordUtility");
 
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
@@ -20,5 +20,7 @@ app.use("/googleDoc", googleDoc);
 app.use("/teams", teams);
 
 app.use("/conflunce", confluence);
+
+app.use("/discord", discord);
 
 module.exports = app;

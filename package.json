@@ -1,23 +1,30 @@
 {
-  "name": "express-app",
+  "name": "trouble-shooting",
   "version": "1.0.0",
-  "description": " Node.js ",
-  "main": "app.js",
+  "description": "",
+  "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon server.js",
-    "start-server": "node server.js"
+    "start": "nodemon server.js"
   },
-  "author": "Omar Anan",
+  "author": "Omar Anan Abouromia",
   "license": "ISC",
   "dependencies": {
     "@slack/web-api": "^6.9.0",
-    "api": "^6.1.0",
+    "@tactful/channels": "^0.0.36",
+    "api": "^6.1.1",
     "axios": "^1.4.0",
+    "confluence": "^0.0.0",
+    "confluence-api": "^1.4.0",
+    "cors": "^2.8.5",
+    "discord.js": "^14.13.0",
     "dotenv": "^16.3.1",
-    "ejs": "^3.1.6",
     "express": "^4.18.2",
+    "googleapis": "^126.0.0",
+    "morgan": "^1.10.0",
     "nodemon": "^3.0.1",
+    "open": "^9.1.0",
+    "pg": "^8.11.3",
     "slack": "^11.0.2",
     "web": "^0.0.2"
   }

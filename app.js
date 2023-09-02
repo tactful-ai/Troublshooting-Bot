@@ -5,10 +5,11 @@ const googleDoc = require("./providers/googleDocs/googleUtilty");
 const confluence = require("./providers/confluence/confluenceUtility");
 const teams = require("./providers/microsoftTeams/teamsUtility");
 const discord = require("./providers/discord/discordUtility");
+const morgan = require("morgan");
 
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
-
+app.use(morgan("dev"));
 app.get("/", (req, res) => {
   res.send("Welcome To Troubleshooting Bot");
 });

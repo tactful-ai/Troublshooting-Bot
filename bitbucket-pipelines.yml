@@ -1,0 +1,74 @@
+options:
+  max-time: 15
+
+image: tactful/ci-cd:v13.5
+
+definitions:
+  steps:
+    - step: &Check-Vulnerabilities
+        name: check-vulnerabilities
+        image: tactful/vulnr-scan:v1.0.0
+        script:
+          - syft . --scope all-layers -o spdx-json > sbom.json
+         # - cat ./sbom.json | grype --fail-on critical > vulnr.txt
+        artifacts: #exporting the sbom.json and vulnr.txt to be available for other steps
+          - sbom.json
+          - vulnr.txt
+
+    - step: &Run-Unit-Tests
+        name: Test 
+        caches:
+          - node
+        script:
+          - npm run login
+          - npm install
+
+    - step: &SonarQube-analysis
+        name: SonarQube analysis
+        image: sonarsource/sonar-scanner-cli:latest
+        script:
+          - sonar-scanner -Dsonar.projectKey=automation-partner -Dsonar.sources=./src -Dsonar.host.url=${SONAR_HOST_URL} -Dsonar.login=${SONAR_TOKEN} || true
+   
+    - step: &Build-automation-partner-Image
+        name: Build automation-partner Image
+        services: # enable Docker because we will build an image
+          - docker
+        script:
+          - /usr/local/bin/build.sh automation_partner ${BITBUCKET_TAG} ./Dockerfile
+
+    - step: &Update-DEV-Tag
+        name: Update Infra DEV Tag
+        image: tactful/ci-cd:v13.11
+        trigger: manual
+        script:
+          - /usr/local/bin/update_infra_tag.sh dev .automation_partner.tag ${BITBUCKET_TAG}
+    - step: &Update-QA-Tag
+        name: Update Infra QA Tag
+        image: tactful/ci-cd:v13.11
+        trigger: manual
+        script:
+          - /usr/local/bin/update_infra_tag.sh qa .automation_partner.tag ${BITBUCKET_TAG}
+    - step: &Update-Demo-Dstynengage-Tag
+        name: Update Infra Demo Dstnyengage Tag
+        image: tactful/ci-cd:v13.11
+        trigger: manual
+        script:
+          - /usr/local/bin/update_infra_tag.sh demo-dstnyengage .automation_partner.tag ${BITBUCKET_TAG}
+
+pipelines:
+  tags:
+    v*.*.*:
+      # - step: *Check-Vulnerabilities
+      # - step: *Run-Unit-Tests
+      # - step: *SonarQube-analysis
+      - step: *Build-automation-partner-Image
+      - parallel:
+        - step: *Update-DEV-Tag
+        - step: *Update-QA-Tag
+        - step: *Update-Demo-Dstynengage-Tag
+
+  pull-requests:
+    "**":
+      - step: *Check-Vulnerabilities
+      - step: *Run-Unit-Tests
+      - step: *SonarQube-analysis

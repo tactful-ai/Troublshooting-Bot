@@ -1,118 +1,92 @@
-# Troublshooting-Bot
-We prioritize efficient onboarding and seamless knowledge management with a troubleshooting chatbot in MS Teams. It scans conversations, Confluence docs, FAQs, and offers a central dashboard for updates on SDK dependencies, announcements, webinars, and resources. #Productivity #Collaboration
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Integrating Slack using Slack API</title>
-</head>
-<body>
-    <h1>Integrating Slack using Slack API</h1>
-    <p>In this tutorial, we will learn how to integrate Slack into your application using the Slack API. We'll cover posting questions and answers, retrieving channel history, and searching for technical keywords using the search API.</p>
-    <h2>1. Posting Questions and Answers using Webhooks</h2>
-    <p>First, let's set up a webhook to post questions and answers to a Slack channel.</p>
-    <code>
-        const webhookURL = 'YOUR_WEBHOOK_URL';
-        const message = {
-            text: 'Question: How to integrate Slack using API?',
-            attachments: [
-                {
-                    text: 'Answer: You can integrate Slack using the Slack API by...',
-                    color: '#36a64f'
-                }
-            ]
-        };
-        fetch(webhookURL, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(message)
-        });
-    </code>
-    <h2>2. Retrieving Channel History</h2>
-    <p>To retrieve channel history, you can use the conversations.history API.</p>
-    <code>
-        const token = 'YOUR_ACCESS_TOKEN';
-        const channelId = 'CHANNEL_ID';
-        fetch(`https://slack.com/api/conversations.history?token=${token}&channel=${channelId}`)
-            .then(response => response.json())
-            .then(data => {
-                // Process and display channel history data
-            });
-    </code>
-    <h2>3. Using Search API for Technical Keywords</h2>
-    <p>Use the search.messages API to search for specific technical keywords within messages.</p>
-    <code>
-        const keyword = 'integration';
-        const searchURL = `https://slack.com/api/search.messages?token=${token}&query=${keyword}`;
-        fetch(searchURL)
-            .then(response => response.json())
-            .then(data => {
-                // Process and display search results
-            });
-    </code>
-   <h2>Conclusion</h2>
-    <p>Integrating Slack using the Slack API opens up a world of possibilities for communication and automation within your application. By utilizing webhooks, retrieving channel history, and searching for specific keywords, you can enhance your user experience and streamline workflows.</p>
-</body>
-    <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Integrating Google Docs using Google Docs API</title>
-</head>
-<body>
-    <h1>Integrating Google Docs using Google Docs API</h1>
-    <p>In this tutorial, we will explore how to integrate Google Docs into your application using the Google Docs API. We'll cover posting questions and answers, retrieving documents, and searching for technical keywords using a Node.js server.</p>
-    <h2>1. Setting Up Google Cloud Console</h2>
-    <p>First, create a project in the Google Cloud Console and enable the Google Docs API. Create credentials and download the JSON file containing your client secret and API key.</p>
-    <h2>2. Setting Up Node.js Server</h2>
-    <p>Install the required package using npm:</p>
-    <code>
-        npm install googleapis
-    </code>
-    <p>Then, initialize the Google Docs API using your downloaded client secret JSON file.</p>
-    <code>
-        const { google } = require('googleapis');
-        const credentials = require('path-to-your-client-secret.json');
-      const auth = new google.auth.GoogleAuth({
-            credentials,
-            scopes: ['https://www.googleapis.com/auth/documents']
-        });
-        const docs = google.docs({ version: 'v1', auth });
-    </code>
-    <h2>3. Posting Questions and Answers</h2>
-    <p>Use the API to create a new document with questions and answers.</p>
-    <code>
-        const documentContent = {
-            title: 'Q&A Document',
-            body: {
-                content: [
-                    { paragraph: { elements: [{ textRun: { content: 'Question: How to integrate Google Docs using API?' } }] } },
-                    { paragraph: { elements: [{ textRun: { content: 'Answer: You can integrate Google Docs using the Google Docs API by...' } }] } }
-                ]
-            }
-        };
-        const response = await docs.documents.create(documentContent);
-    </code>
-    <h2>4. Retrieving Documents</h2>
-    <p>Use the API to retrieve documents.</p>
-    <code>
-        const documentId = 'YOUR_DOCUMENT_ID';
-        const response = await docs.documents.get({ documentId });
-    </code>
-    <h2>5. Searching for Technical Keywords</h2>
-    <p>Search for technical keywords within documents.</p>
-    <code>
-        const keyword = 'integration';
-        const searchOptions = {
-            documentId: 'YOUR_DOCUMENT_ID',
-            q: keyword
-        };
-        const response = await docs.documents.batchUpdate(searchOptions);
-    </code>
-    <h2>Conclusion</h2>
-    <p>Integrating Google Docs using the Google Docs API allows you to automate document creation, retrieval, and searching for specific keywords. By leveraging the power of Node.js and the Google Cloud Console, you can enhance your application's collaboration and content management capabilities.</p>
-</body>
-</html>
+# Automation SDK Partner #
 
+
+The Automation-SDK-Partner is a project that utilizes the Automation-SDK, enabling users to create custom automation flows for messaging platforms (Facebook, WhatsApp and Webchcat). These created flows are dynamic and can be used to create simple or complex flows using a set of steps. Furthermore, this project has a command-line interface (CLI) that makes it easy to create and customize automation flows using code templates.
+
+|Latest Version | Stable Version |
+| --- | --- |
+| v1.0.24 | --- |
+
+## How do I get set up? ##
+
+* `npm run login` ([Guide](https://sitalks.atlassian.net/wiki/spaces/Janus/pages/1943175169/AWS+Code+Artifact+Login))
+* `npm install`
+* `npm run build`
+* `sh setup.sh`
+
+## How do I run? ##
+In case of you need to run locally
+* ```npm run dev```
+In case of you need to run locally and use other services of QA and redis bus/cach
+* ```npm run qa```
+
+
+## Features ##
+
+### Listeners
+
+By providing the suitable values of the environment variables to the SDK Configs object, the partner could listen to "TactfulBus" (which is considered a message queuing service) events. The available listeners are:
+
+- **INTENT**: Partner can listen to intent. After receiving a message and parsing it using the NLU-Service, we can get the intent of that message. Depending on the intent value, a specific flow will be triggered.
+- **MESSAGE**: By receiving any message from one of the messaging platforms (e.g., Facebook), the partner can listen to this message and take an action by triggering a specific flow.
+- **BUS_EVENTS** and **AUTOMATION_EVENTS**: Depend on firing events from TactfulBus or Automation-SDK-Partner itself, the target flow can be up and running.
+
+### Command-Line-Interface
+
+By using the following command `npm run generate`, The command will prompt you to provide some information about the flow you want to create, including the messaging platform you're targeting and the types of actions you want to include in your flow.
+
+Once you've created your flow file, you can customize it using the Automation SDK package. The flow file includes a variety of pre-built components that you can use to create your custom automation flows. The CLI asks you some questions, and you have to choose what you want. Examples of these questions are:
+
+- "Enter the filename:"
+- "Choose The Flow Type:" (e.g., Facebook, WhatsApp or Webchat)
+
+## Usage ##
+
+Once the package and its dependencies are installed, you can use this command
+
+```npm run generate```
+
+After creating the file which contains your new flow, you probably have code like this:
+
+```javascript
+import { FacebookFlow, Triggers } from 'automation-sdk';
+
+export function greet() {
+    const greetingFlow = new FacebookFlow("greeting", "sdk", "1.0");
+    greetingFlow
+        .on(Triggers.INTENT, "RESTART")
+        .text([['Welcome to the first flow', 1]])
+    return greetingFlow;
+}
+```
+In this example, `greetingFlow` is a new instance of `FacebookFlow`, which has a "greeting" name, "sdk" category with the 1.0 version number. You can access the available steps for `FacebookFlow` using the greetingFlow instance. In the example, we used `on` and `text` steps, and there were a set of steps like:
+
+* text
+* randomText
+* userInput
+* carousel
+* quickReply
+* dynamicCarousel
+* dynamicQuickReply
+* setVariable
+* config
+* action
+* fire
+* jump
+* api
+* on
+* if
+* check
+* setReminder
+* stopReminder
+
+You can follow the guidelines of the Automation-SDK [Documentation](https://sitalks.atlassian.net/wiki/spaces/Janus/pages/1942913624/Steps) (steps section) to learn more about these steps.
+
+## Documentation ##
+
+[Automation SDK Partner Documentation](https://sitalks.atlassian.net/wiki/spaces/Janus/pages/1939505157/Automation+SDK+Partner)
+
+
+## Changelog Document ##
+
+For the latest chenges browse the [Changelog](./CHANGELOG.md )

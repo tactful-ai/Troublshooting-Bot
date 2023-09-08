@@ -149,7 +149,11 @@ function handleServer() {
         cacheClient!
       );
       const cachedDialog = await dialogController.getDialog();
+      console.log(`THE CAHSE DIALOG ========>>>>>>>> ${cachedDialog}`)
       const dialog = Dialog.fromJSON(cachedDialog, dialogController);
+      console.log(`THE DIALOG ========>>>>>>>> ${JSON.stringify(dialog)}`)
+
+
       await dialog.resume(message.tactfulMessage);
     }
   );

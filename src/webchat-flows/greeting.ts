@@ -41,35 +41,7 @@ export function webchatGreet() {
       },
     },
   ];
-  const providers = [
-    {
-      id: "1",
-      question: "What is a Linux distribution (Linux distro)?",
-      answer:
-        "A Linux distribution is a complete operating system built around the Linux kernel. It includes various software packages, libraries, and utilities to provide a functional and user-friendly environment. Examples of Linux distributions include Ubuntu, Fedora, Debian, and CentOS.",
-      src: {
-        tiny: "https://yt3.googleusercontent.com/ytc/AOPolaTCsMhpgrJldSw0eABzVJ9JEc1pYyTST4CJ7JzN1Q=s900-c-k-c0x00ffffff-no-rj",
-      },
-    },
-    {
-      id: "2",
-      question: "What is the root user in Linux?",
-      answer:
-        "The root user is the superuser in Linux, also known as the system administrator. Root has the highest level of access and can perform any operation on the system. It's important to use root privileges judiciously to prevent accidental damage.",
-      src: {
-        tiny: "https://media.licdn.com/dms/image/C4D0BAQHR3-muCN3-4A/company-logo_200_200/0/1611699233211?e=2147483647&v=beta&t=9ih0eEQjXVMMb5gA76KKXUV3T-VJkTN812f769UiBr4",
-      },
-    },
-    {
-      id: "3",
-      question: "How do I create a new user in Linux?",
-      answer:
-        "You can create a new user in Linux using the useradd command, followed by passwd to set the user's password. For example: sudo useradd username and sudo passwd username.",
-      src: {
-        tiny: "https://storage.googleapis.com/gweb-uniblog-publish-prod/images/Google_Docs.width-500.format-webp.webp",
-      },
-    },
-  ];
+
   const rate = [
     {
       id: "1",
@@ -138,6 +110,41 @@ export function webchatGreet() {
         ),
       ],
     });
-  
+  // .api(
+  //   "http://localhost:3000/slack/question",
+  //   "POST",
+  //   {},
+  //   { question: "learn more about javascript" }
+  // )
+  // .action(async ($: IExecuteParam) => {
+  //   console.log(
+  //     `RESPONEEEEEEEEEEXXXX =====>>>>>${$.context.api.response.json.data.keywordResults[0].foundQuestion}`
+  //   );
+  //   const fetchedQuestion =
+  //     $.context.api.response.json.data.keywordResults[0].foundQuestion;
+  //   return fetchedQuestion;
+  // })
+  // .text([["RESPONSE: {{fetchedQuestion}}"]]);
+
   return greetingFlow;
 }
+// .action(async ($: IExecuteParam) => {
+//   console.log("webchat get queue params ==> ", {
+//     profileId: $.tactfulMessage.profileId,
+//     channelId: $.tactfulMessage.channelInfo?.id,
+//   });
+//   const livechatCommands = await $.livechat.getCommands();
+//   const queue = await livechatCommands.queueCommand(
+//     {
+//       profileId: $.tactfulMessage.profileId,
+//       channelId: $.tactfulMessage.channelInfo?.id,
+//     },
+//     "getChannelQueue"
+//   );
+//   console.log("retrieved queue ==>", queue);
+//   $.context.params[`${$.tactfulMessage.conversationId}_queue`] = queue;
+// })
+
+//email service ==> sending email
+// integration providers with automation
+//integarting command routing

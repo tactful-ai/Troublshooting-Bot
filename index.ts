@@ -138,6 +138,7 @@ function handleServer() {
 
   Bus.getInstance().on(
     `${Triggers.RESUME_FLOWS_AUTOMATION_EVENTS}.${process.env.SERVICE_NAME}`,
+    // `tactful.message.troubleshootingChatbot`,
     async (msg: any, cb: any) => {
       console.log("Intentc from bus intent resume ======> ", msg);
       cb();
@@ -149,10 +150,9 @@ function handleServer() {
         cacheClient!
       );
       const cachedDialog = await dialogController.getDialog();
-      console.log(`THE CAHSE DIALOG ========>>>>>>>> ${cachedDialog}`)
+      console.log(`THE CAHSE DIALOG ========>>>>>>>> ${cachedDialog}`);
       const dialog = Dialog.fromJSON(cachedDialog, dialogController);
-      console.log(`THE DIALOG ========>>>>>>>> ${JSON.stringify(dialog)}`)
-
+      console.log(`THE DIALOG ========>>>>>>>> ${JSON.stringify(dialog)}`);
 
       await dialog.resume(message.tactfulMessage);
     }

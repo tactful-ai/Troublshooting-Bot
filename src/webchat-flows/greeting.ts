@@ -113,6 +113,10 @@ export function webchatGreet() {
       question: "How can I help you?",
       contextParam: "userQuestion",
     })
+    .text([
+      ["Thank you for your question {{{params.userQuestion}}}"],
+      ["We will send your question to Elastic Search"],
+    ])
     .setVariable("data", JSON.stringify(elasticsearchData)) // Store question data in a context variable
     .dynamicCarousel("{{{params.data}}}", {
       id: "{{id}}",
@@ -127,129 +131,13 @@ export function webchatGreet() {
           new WebchatFlow("b1", "sdk")
             .text([["Show More to {{payload.question}}"]])
             .text([[" {{payload.answer}}"]])
-            .setVariable("rate", JSON.stringify(rate))
-            .dynamicQuickReply(
-              "Rate your answer from Elastic Search: ",
-              "{{{params.rate}}}",
-              {
-                id: "{{id}}",
-                title: "{{question}}",
-                payload: {
-                  id: "{{id}}",
-                  question: "{{question}}",
-                  answer: "{{answer}}",
-                },
-                flow: new WebchatFlow("colorCode", "examples_category").text([
-                  ["{{payload.question}} answer: {{payload.answer}}"],
-                ]),
-              }
-            )
+            .quickReply("What is your opnion for Elastic Search", [
+              new FlowButton("1", "Useful", "1", firstFlow()),
+              new FlowButton("2", "Not Useful", "2", secondFlow()),
+            ])
         ),
       ],
-    })
-    // .dynamicQuickReply(
-    //   "Rate your answer from Elastic Search 2: ",
-    //   "{{{params.rate}}}",
-    //   {
-    //     id: "{{id}}",
-    //     title: "{{question}}",
-    //     payload: {
-    //       id: "{{id}}",
-    //       question: "{{question}}",
-    //       answer: "{{answer}}",
-    //     },
-    //     flow: new WebchatFlow("colorCode", "examples_category").text([
-    //       ["{{payload.question}} answer: {{payload.answer}}"],
-    //     ]),
-    //   }
-    // )
-    //if notuseful
-    .text([["we will send your question to our providers"]])
-    .setVariable("data", JSON.stringify(providers)) // Store question data in a context variable
-    .dynamicCarousel("{{{params.data}}}", {
-      id: "{{id}}",
-      title: "{{question}}",
-      subTitle: "{{answer}}",
-      mediaURL: "{{{src.tiny}}}",
-      buttons: [
-        new FlowButton(
-          "f{{id}}",
-          "Show More",
-          {
-            id: "{{id}}",
-            question: "{{question}}",
-            answer: "{{answer}}",
-          },
-          new WebchatFlow("b1", "sdk")
-            .text([["Show More to {{payload.question}}"]])
-            .text([[" {{payload.answer}}"]])
-            .setVariable("rate", JSON.stringify(rate))
-            .dynamicQuickReply(
-              "Rate your answer from our providers: ",
-              "{{{params.rate}}}",
-              {
-                id: "{{id}}",
-                title: "{{question}}",
-                payload: {
-                  id: "{{id}}",
-                  question: "{{question}}",
-                  answer: "{{answer}}",
-                },
-                flow: new WebchatFlow("colorCode", "examples_category").text([
-                  ["{{payload.question}} answer: {{payload.answer}}"],
-                ]),
-              }
-            )
-        ),
-      ],
-    })
-    // .quickReply("What is your opinon", [
-    //   new flow.FlowButton("1", "Useful", {}, firstFlow()),
-    //   new flow.FlowButton("2", "Not Useful", {}, secondFlow()),
-    // ]);
-
-    .text([["End of Conversation"]]);
-  // .text([["end of the flow "]])
-  // .action(async ($: IExecuteParam) => {
-  //   console.log("webchat get queue params ==> ", {
-  //     profileId: $.tactfulMessage.profileId,
-  //     channelId: $.tactfulMessage.channelInfo?.id,
-  //   });
-  //   const livechatCommands = await $.livechat.getCommands();
-  //   const queue = await livechatCommands.queueCommand(
-  //     {
-  //       profileId: $.tactfulMessage.profileId,
-  //       channelId: $.tactfulMessage.channelInfo?.id,
-  //     },
-  //     "getChannelQueue"
-  //   );
-  //   console.log("retrieved queue ==>", queue);
-  //   $.context.params[`${$.tactfulMessage.conversationId}_queue`] = queue;
-  // })
-
-  // .text([["end of the flow 2"]]);
+    });
+  
   return greetingFlow;
 }
-
-// Call Slack API
-// Response of the Slack API
-// .api(
-//   "http://localhost:3000/slack/question",
-//   "POST",
-//   { "Content-Type":"application/json"},
-//   { "question": "what is linux" }
-//   // { "question": "{{params.userQuestion}}" }
-// )
-// .action(($: IExecuteParam) => {
-//   console.log(`RESPONEEEEEEEEEE =====>>>>>${$.context.api.response}`);
-// })
-
-//############## BASTAWESY FLOW #############################
-// Message find in elastic search
-// best case retunr answer from elastic
-// show data in Dynammic carsouel
-//  show the Qhuick reply after show the answer (useful , not useful)
-//  in case if useful (rate the answer)
-//  in case if not useful (save question in ealstic then send to slack and providers)
-
-//.fire(Triggers.INTENT, "MAIN_MENU");

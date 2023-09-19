@@ -9,7 +9,6 @@ import {
 import flow from "automation-sdk";
 import { firstFlow } from "./firstFlow";
 import { secondFlow } from "./secondFlow";
-import { createElasticsearchFlow } from "./elasticSearch";
 
 export function webchatGreet() {
   const elasticsearchData = [
@@ -85,6 +84,7 @@ export function webchatGreet() {
       question: "How can I help you?",
       contextParam: "userQuestion",
     })
+
     .text([
       ["Thank you for your question {{{params.userQuestion}}}"],
       ["We will send your question to Elastic Search"],
@@ -110,41 +110,6 @@ export function webchatGreet() {
         ),
       ],
     });
-  // .api(
-  //   "http://localhost:3000/slack/question",
-  //   "POST",
-  //   {},
-  //   { question: "learn more about javascript" }
-  // )
-  // .action(async ($: IExecuteParam) => {
-  //   console.log(
-  //     `RESPONEEEEEEEEEEXXXX =====>>>>>${$.context.api.response.json.data.keywordResults[0].foundQuestion}`
-  //   );
-  //   const fetchedQuestion =
-  //     $.context.api.response.json.data.keywordResults[0].foundQuestion;
-  //   return fetchedQuestion;
-  // })
-  // .text([["RESPONSE: {{fetchedQuestion}}"]]);
 
   return greetingFlow;
 }
-// .action(async ($: IExecuteParam) => {
-//   console.log("webchat get queue params ==> ", {
-//     profileId: $.tactfulMessage.profileId,
-//     channelId: $.tactfulMessage.channelInfo?.id,
-//   });
-//   const livechatCommands = await $.livechat.getCommands();
-//   const queue = await livechatCommands.queueCommand(
-//     {
-//       profileId: $.tactfulMessage.profileId,
-//       channelId: $.tactfulMessage.channelInfo?.id,
-//     },
-//     "getChannelQueue"
-//   );
-//   console.log("retrieved queue ==>", queue);
-//   $.context.params[`${$.tactfulMessage.conversationId}_queue`] = queue;
-// })
-
-//email service ==> sending email
-// integration providers with automation
-//integarting command routing

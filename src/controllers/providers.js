@@ -23,6 +23,7 @@ const discordToken = process.env.DISCORD_TOKEN;
 const channelID = process.env.DISCORD_CHANNEL_ID;
 const accessToken = process.env.TEAMS_TOKEN;
 const categoryKeywordsMap = require("../lib/category");
+const cheerio = require("cheerio");
 
 async function slackSearchQuery(keyword) {
   try {
@@ -295,17 +296,22 @@ async function teamsSearchQuery(keyword) {
 
     const matchedMessages = messages
       .filter((message) => message.body.content.includes(keyword))
-      .map((message) => ({
-        id: uuidv4(), // Add an id field
-        title:
-          message.from && message.from.user
-            ? message.from.user.displayName
-            : "System",
-        short_description: message.body.content,
-        image_url:
-          "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c9/Microsoft_Office_Teams_%282018%E2%80%93present%29.svg/1200px-Microsoft_Office_Teams_%282018%E2%80%93present%29.svg.png", // Add an image_url field
-        keyword: keyword,
-      }));
+      .map((message) => {
+        const $ = cheerio.load(message.body.content);
+        const textContent = $.text();
+
+        return {
+          id: uuidv4(),
+          title:
+            message.from && message.from.user
+              ? message.from.user.displayName
+              : "System",
+          short_description: textContent, // Use the extracted text content
+          image_url:
+            "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c9/Microsoft_Office_Teams_%282018%E2%80%93present%29.svg/1200px-Microsoft_Office_Teams_%282018%E2%80%93present%29.svg.png",
+          keyword: keyword,
+        };
+      });
 
     return {
       found: matchedMessages.length > 0,

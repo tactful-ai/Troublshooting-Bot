@@ -138,7 +138,7 @@ function handleServer() {
 
   Bus.getInstance().on(
     `${Triggers.RESUME_FLOWS_AUTOMATION_EVENTS}.${process.env.SERVICE_NAME}`,
-    // `tactful.message.troubleshootingChatbot`,
+    //`tactful.message.troubleshootingChatbot`,
     async (msg: any, cb: any) => {
       console.log("Intentc from bus intent resume ======> ", msg);
       cb();

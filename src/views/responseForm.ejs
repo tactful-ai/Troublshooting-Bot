@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Question Response</title>
+    <link rel="stylesheet" type="text/css" href="/css/dark-theme.css" />
+  </head>
+  <body>
+    <div class="header">
+      <div class="custom-logo logo"></div>
+      <h1>Provide a Response</h1>
+    </div>
+    <form action="/response" method="POST">
+      <label for="email">Email:</label>
+      <input type="email" id="email" name="email" required /><br /><br />
+      <label for="response">Response:</label>
+      <textarea
+        id="response"
+        name="response"
+        rows="4"
+        cols="50"
+        required
+      ></textarea
+      ><br /><br />
+      <input type="submit" value="Submit Response" />
+    </form>
+  </body>
+</html>

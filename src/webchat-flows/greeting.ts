@@ -41,19 +41,6 @@ export function webchatGreet() {
     },
   ];
 
-  const rate = [
-    {
-      id: "1",
-      question: "Useful answer",
-      answer: "Thanks for your feedback",
-    },
-    {
-      id: "2",
-      question: "Not useful answer",
-      answer: "wait, we will send your question to our providers",
-    },
-  ];
-
   const greetingFlow = new flow.WebchatFlow("partner_welcome", "greeting");
   greetingFlow
     .on(Triggers.INTENT, "GREETINGS")
@@ -74,6 +61,12 @@ export function webchatGreet() {
         errorMessage: "Email is not valid, please enter a valid email address ",
       },
     })
+    .api(
+      "http://localhost:3000/verification-code",
+      "POST",
+      {},
+      { email: "{{params.userEmail}}" }
+    )
     .text([
       [
         "We will send you a verification code to this email {{{params.userEmail}}}",
@@ -113,3 +106,33 @@ export function webchatGreet() {
 
   return greetingFlow;
 }
+// .action(async ($: IExecuteParam) => {
+//   console.log("webchat get queue params ==> ", {
+//     profileId: $.tactfulMessage.profileId,
+//     channelId: $.tactfulMessage.channelInfo?.id,
+//   });
+//   const livechatCommands = await $.livechat.getCommands();
+//   const queue = await livechatCommands.queueCommand(
+//     {
+//       profileId: $.tactfulMessage.profileId,
+//       channelId: $.tactfulMessage.channelInfo?.id,
+//     },
+//     "getChannelQueue"
+//   );
+//   console.log("retrieved queue ==>", queue);
+//   $.context.params[`${$.tactfulMessage.conversationId}_queue`] = queue;
+// })
+
+// .api(
+//   "http://localhost:3000/email",
+//   "POST",
+//   {},
+//   { email: "{{params.userEmail}}", question: "{{params.userQuestion}}" }
+// );
+
+// .api(
+//   "http://localhost:3000/userData",
+//   "POST",
+//   {},
+//   { email: "{{params.userEmail}}", question: "{{params.userQuestion}}" }
+// );

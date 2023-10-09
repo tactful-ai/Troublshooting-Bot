@@ -1,4 +1,4 @@
-# Automation SDK Partner #
+# Automation SDK Partner. #
 
 
 The Automation-SDK-Partner is a project that utilizes the Automation-SDK, enabling users to create custom automation flows for messaging platforms (Facebook, WhatsApp and Webchcat). These created flows are dynamic and can be used to create simple or complex flows using a set of steps. Furthermore, this project has a command-line interface (CLI) that makes it easy to create and customize automation flows using code templates.
